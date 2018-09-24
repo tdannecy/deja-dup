@@ -1,0 +1,8 @@
+[Operation]
+Type=backup
+
+[Duplicity]
+Runs=status;dry;backup;status-restore;list;verify;
+
+[Duplicity status]
+Script=ls @TEST_HOME@/backup

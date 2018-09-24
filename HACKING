@@ -1,0 +1,55 @@
+= New to deja-dup? =
+
+When making a non-trivial change, remember to add yourself to AUTHORS and deja-dup/help/C/credits.page
+
+deja-dup uses meson, but for most development purposes, you can simply use the convenience top-level Makefile:
+ * To build: make
+ * To test: make check
+ * To install: make install DESTDIR=/tmp/deja-dup
+
+When testing a change, it is helpful to run ./tests/shell (or shell-local if you want a silo'd dbus environment too)
+That will give you a full shell pointing at all your built executables.
+
+== Folder Layout ==
+ * libdeja: non-GUI library that wraps policy and hides complexity of duplicity
+ * deja-dup: GNOME UI for libdeja, including integration points with nautilus and control-center
+ * data: shared schemas, icons, etc
+ * vapi: some helper APIs for vala
+
+= Development Notes =
+
+== How to Release ==
+
+Steps:
+ * Grab latest translations from LP, integrate
+ * Update help documentation (new arguments, new gui labels)
+ * make check dist
+ * debuild, install (to catch any foolish errors that check missed)
+ * Update toplevel meson.build version
+ * Tag git with new release number (4.0 for 4.0)
+ * Update LP (new release, new download)
+ * NEWSTABLE: Update LP testing recipe version
+ * STABLE: New screenshots if needed for wiki [1]
+ * Announce on LP
+ * Mark bugs fix released on LP
+
+[1] Screenshots:
+ * Alt+PrntScreen to get just the current window
+
+== TODO ==
+ * use GResource
+
+== Backend Split Notes ==
+
+What do we need?
+ * describe-credentials like:
+   * username
+   * password
+   * folder
+ * here-are-credentials (secret how?)
+ * put-these
+ * get-these
+ * list
+ * size-of-these (to make sure there is room)
+
+basically, same as duplicity, duh!

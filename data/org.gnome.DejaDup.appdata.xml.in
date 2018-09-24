@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- For copyright information, see AUTHORS. -->
+<component type="desktop-application">
+    <id>org.gnome.DejaDup.desktop</id>
+    <metadata_license>CC-BY-SA-4.0</metadata_license>
+    <project_license>GPL-3.0+</project_license>
+    <name>Déjà Dup Backup Tool</name>
+    <summary>Keep your important documents safe from disaster</summary>
+    <description>
+        <p>Déjà Dup is a simple backup tool. It hides the complexity of backing up the Right Way (encrypted, off-site, and regular) and uses duplicity as the backend.</p>
+        <ul>
+            <li>Support for local, remote, or cloud backup locations such as Google Drive and Nextcloud</li>
+            <li>Securely encrypts and compresses your data</li>
+            <li>Incrementally backs up, letting you restore from any particular backup</li>
+            <li>Schedules regular backups</li>
+            <li>Integrates well into your GNOME desktop</li>
+        </ul>
+    </description>
+    <provides>
+        <binary>deja-dup</binary>
+    </provides>
+    <categories>
+        <category>Utility</category>
+        <category>Archiving</category>
+    </categories>
+    <kudos>
+        <kudo>AppMenu</kudo>
+        <kudo>HiDpiIcon</kudo>
+        <kudo>HighContrast</kudo>
+        <kudo>ModernToolkit</kudo>
+        <kudo>Notifications</kudo>
+        <kudo>UserDocs</kudo>
+    </kudos>
+    <translation type="gettext">deja-dup</translation>
+    <url type="homepage">https://wiki.gnome.org/Apps/DejaDup</url>
+    <url type="bugtracker">https://bugs.launchpad.net/deja-dup</url>
+    <url type="help">https://wiki.gnome.org/Apps/DejaDup/Help</url>
+    <update_contact>deja-dup-list@gnome.org</update_contact>
+    <screenshots>
+        <screenshot type="default">
+            <image type="source">https://launchpad.net/deja-dup/@series@/@version@/+download/screenshot-1.png</image>
+        </screenshot>
+        <screenshot>
+            <image type="source">https://launchpad.net/deja-dup/@series@/@version@/+download/screenshot-2.png</image>
+        </screenshot>
+    </screenshots>
+</component>

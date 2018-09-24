@@ -1,0 +1,28 @@
+[Desktop Entry]
+Version=1.1
+
+Name=Backups
+Comment=Change your backup settings
+
+# Translators: this is the icon name, you probably don't need to change this
+Icon=org.gnome.DejaDup
+
+Exec=deja-dup
+
+StartupNotify=true
+DBusActivatable=true
+
+Type=Application
+Categories=Utility;Archiving;GNOME;GTK;X-GNOME-Utilities;
+
+# Translators: Add whatever keywords you want in your language, separated by semicolons
+# These keywords are used when searching for applications in dashes, etc.
+Keywords=déjà;deja;dup;
+
+X-GNOME-UsesNotifications=true
+
+Actions=backup;
+
+[Desktop Action backup]
+Name=Back Up
+Exec=deja-dup --backup

@@ -1,0 +1,122 @@
+#!/bin/sh
+# -*- Mode: sh; indent-tabs-mode: nil; tab-width: 2; coding: utf-8 -*-
+#
+# This file is part of Déjà Dup.
+# For copyright information, see AUTHORS.
+#
+# Déjà Dup is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# Déjà Dup is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Déjà Dup.  If not, see <http://www.gnu.org/licenses/>.
+
+# This script dumps you in a special shell, ideal for testing deja-dup.
+# It will point at the locally built executables and plugins.  It will
+# point at a custom dconf location and $HOME.
+#
+# There are three modes:
+# 1) default: called as 'shell', it simply points at the built versions
+# 2) local: called as 'shell-local', it also sets up a fake env
+# 3) system: called as 'shell-system', it sets ups a fake env and points at
+#            system executables
+
+TOPDIR=$(readlink -e "$(dirname ${0})/..")
+BUILDDIR="${TOPDIR}/builddir"
+
+SHNAME=$(basename $0)
+
+# Create temp environment
+ROOTDIR=$(mktemp -d --tmpdir dd.XXXXXXXXXX)
+export DEJA_DUP_TEST_ROOT="${ROOTDIR}"
+
+run_shell()
+{
+  ARGS=$@
+  if [ -z "$ARGS" ]; then
+    export PS1='\[\e[1;32m\]deja-dup\$\[\e[0m\] '
+    cd "${ROOTDIR}"
+    ARGS="bash --norc"
+
+    # Explain the details
+    echo "Your data playground and home directory is ${ROOTDIR}"
+    echo "Run deja-dup or deja-dup-monitor to test."
+    echo "Run exit to leave."
+    echo "Run exit 1 to leave and keep data playground intact."
+  fi
+  CMD="$ARGS"
+  if [ "$SHNAME" != "shell" ]; then
+    CMD="dbus-run-session -- $ARGS"
+  fi
+  if sh -c "$CMD"; then
+    rm -rf "${ROOTDIR}" # Cleanup on clean exit
+  fi
+}
+
+
+if [ "$SHNAME" = "shell" ]; then
+  mkdir -p "${ROOTDIR}/share/glib-2.0/schemas"
+  cp "${TOPDIR}/data/org.gnome.DejaDup.gschema.xml" "${ROOTDIR}/share/glib-2.0/schemas"
+  glib-compile-schemas "${ROOTDIR}/share/glib-2.0/schemas"
+  export XDG_DATA_DIRS="${ROOTDIR}/share:${XDG_DATA_DIRS}"
+
+  export DEJA_DUP_TOOLS_PATH="${BUILDDIR}/libdeja/tools/duplicity"
+  export PATH="${BUILDDIR}/deja-dup/monitor:${BUILDDIR}/deja-dup:${PATH}"
+
+  run_shell $@
+  exit
+fi
+
+
+OLD_HOME="${HOME}"
+HOME="${ROOTDIR}"
+
+mkdir -p "${ROOTDIR}/cache"
+export XDG_CACHE_HOME="${ROOTDIR}/cache"
+
+mkdir -p "${ROOTDIR}/config"
+export XDG_CONFIG_HOME="${ROOTDIR}/config"
+
+mkdir -p "${ROOTDIR}/gnupg"
+export GNUPGHOME="${ROOTDIR}/gnupg"
+
+if [ -f "${OLD_HOME}/.config/user-dirs.dirs" -a -f "${OLD_HOME}/.config/user-dirs.locale" ]; then
+  cp "${OLD_HOME}/.config/user-dirs.dirs" "${XDG_CONFIG_HOME}/user-dirs.dirs"
+  cp "${OLD_HOME}/.config/user-dirs.locale" "${XDG_CONFIG_HOME}/user-dirs.locale"
+  . "${XDG_CONFIG_HOME}/user-dirs.dirs"
+  for d in DESKTOP DOCUMENTS DOWNLOAD MUSIC PICTURES PUBLICSHARE TEMPLATES VIDEOS; do
+    eval mkdir -p "\${XDG_${d}_DIR}"
+  done
+fi
+
+
+# For convenience, make some potentially useful folders
+mkdir -p "${ROOTDIR}/source"
+mkdir -p "${ROOTDIR}/backup"
+mkdir -p "${ROOTDIR}/restore"
+
+
+# If we are in local mode, point at our own data files and built objects
+SHNAME=$(basename $0)
+if [ "$SHNAME" = "shell-local" ]; then
+  mkdir -p "${ROOTDIR}/share/glib-2.0/schemas"
+  cp "${TOPDIR}/data/org.gnome.DejaDup.gschema.xml" "${ROOTDIR}/share/glib-2.0/schemas"
+  glib-compile-schemas "${ROOTDIR}/share/glib-2.0/schemas"
+  export XDG_DATA_HOME="${ROOTDIR}/share"
+  export XDG_DATA_DIRS="${XDG_DATA_HOME}:${XDG_DATA_DIRS}"
+
+  mkdir -p "${XDG_DATA_HOME}/Trash"
+
+  export DEJA_DUP_TOOLS_PATH="${BUILDDIR}/libdeja/tools/duplicity"
+  export PATH="${BUILDDIR}/deja-dup/monitor:${BUILDDIR}/deja-dup:${PATH}"
+else
+  export DEJA_DUP_TEST_SYSTEM=1
+fi
+
+run_shell $@

@@ -1,0 +1,29 @@
+[Operation]
+Type=backup
+
+[Duplicity]
+Runs=status;dry;backup;status-restore;list;verify;
+
+[Duplicity status]
+#echo "INFO 3"
+#echo "chain-complete"
+#echo " full $(date --utc --date='1 day ago' +%Y%m%dT%H%M%SZ) 1 enc"
+OutputScript=true
+
+[Duplicity dry]
+Encrypted=true
+
+[Duplicity backup]
+Encrypted=true
+
+[Duplicity status-restore]
+#echo "INFO 3"
+#echo "chain-complete"
+#echo " full $(date --utc --date='1 day ago' +%Y%m%dT%H%M%SZ) 1 enc"
+OutputScript=true
+
+[Duplicity list]
+Encrypted=true
+
+[Duplicity verify]
+Encrypted=true
